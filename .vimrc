@@ -10,17 +10,18 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'davidhalter/jedi-vim'
-Plugin 'rking/ag.vim'
+Plugin 'mileszs/ack.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'morhetz/gruvbox'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'Valloric/YouCompleteMe'
 
 call vundle#end()            " required
 
 
-set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 
 " automatically source vimrc after saving
@@ -48,7 +49,8 @@ set clipboard=unnamed
 set guicursor=i:blinkwait700-blinkon400-blinkoff250
 set ignorecase smartcase "ignore case while searching
 set cursorline
-set autochdir
+" set backspace=indent,eol,start
+" set autochdir
 colorscheme gruvbox
 
 "Solarized Stuff
@@ -65,7 +67,7 @@ set background=dark
 
 " code folding
 set foldmethod=indent   
-set foldnestmax=1
+set foldnestmax=2
 set nofoldenable
 set foldlevel=2
 
@@ -78,19 +80,25 @@ nmap <C-h> :nohl<CR>
 "autocmd vimenter * NERDTree
 map <C-a> :NERDTreeToggle<CR>
 noremap :W :w
-noremap tf :tabf
-noremap vs :vsplit
-noremap hs :split
+noremap tf :tabf 
+noremap vs :vsplit 
+noremap ss :split 
 noremap tt :tags
 noremap mi :set mouse=i<CR>
 noremap ma :set mouse=a<CR>
-noremap cpans<CR> :CtrlP ~/ans<CR>
-noremap cpa2a<CR> :CtrlP ~/ans/a2a<CR>
-noremap cpm<CR> :CtrlP ~/ans/web/lib/a<CR>
-noremap cpf<CR> :CtrlP ~/ans/feed<CR>
-inoremap jk <ESC>
+noremap cpans<CR> :FZF ~/ans<CR>
+noremap cpa2a<CR> :FZF ~/ans/a2a<CR>
+noremap cpm<CR> :FZF ~/ans/web/lib/a<CR>
+noremap cpf<CR> :FZF ~/ans/feed<CR>
+noremap f :FZF<CR>
 "navigation
-nnoremap <tab><tab> <C-W><C-W>
+" nnoremap <tab><tab> <C-W><C-W>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-L> <C-W><C-L>
+" search
+noremap ;s  :Ack!<Space>
 
 
 "nerd commenter
@@ -101,27 +109,16 @@ let g:NERDSpaceDelims = 1
 let g:jedi#use_tabs_not_buffers = 1
 let g:jedi#completions_enabled = 0
 let g:jedi#popup_on_dot = 0
+let g:jedi#use_splits_not_buffers = "right"
 
 
 " vim-airline
-let airline_theme='gruvbox'
+let airline_theme='powerlineish'
 " let g:airline_solarized_bg='dark'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 " let g:airline_powerline_fonts = 1
 
-
-"CtrlP
-let g:ctrlp_max_files=0
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("e")': ['<2-LeftMouse>'],
-    \ 'AcceptSelection("t")': ['<cr>'],
-    \ }
-let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
-if executable('ag')
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-endif
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=/home/schatterjee/ans/.git ls-files -oc --exclude-standard']
 
 
 "NCL
@@ -137,3 +134,35 @@ augroup END
 
 "vim-gutter (git plugin)
 set updatetime=100
+
+" fzf (fuzzy completion)
+set rtp+=~/.fzf
+let g:fzf_action = {
+  \ 'return': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit'} 
+
+let g:fzf_layout = { 'down': '~20%' }
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+"vim ag
+if executable('ag')
+    let g:ackprg = 'ag --nogroup --nocolor --column'
+    " let g:ackprg = 'ag --vimgrep'
+endif
+
+"YouCompleteMe
+let g:ycm_global_ycm_extra_conf = '/home/schatterjee/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
