@@ -15,9 +15,21 @@ Plugin 'davidhalter/jedi-vim'
 Plugin 'mileszs/ack.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'morhetz/gruvbox'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'Valloric/YouCompleteMe'  " NB: install ycm first
+Plugin 'junegunn/fzf'  " install fzf with brew
+Plugin 'junegunn/fzf.vim'
+Plugin 'preservim/nerdcommenter'
+Plugin 'scrooloose/nerdtree'
+
+"Syntax checking
+Plugin 'vim-syntastic/syntastic'
+
+"PEP-8 checking
+Plugin 'nvie/vim-flake8'  " install flake8 first
+Plugin 'dense-analysis/ale'
+
+
 
 call vundle#end()            " required
 
@@ -49,9 +61,11 @@ set clipboard=unnamed
 set guicursor=i:blinkwait700-blinkon400-blinkoff250
 set ignorecase smartcase "ignore case while searching
 set cursorline
+set encoding=utf-8
+
+
 " set backspace=indent,eol,start
 " set autochdir
-colorscheme gruvbox
 
 "Solarized Stuff
 set background=dark
@@ -64,41 +78,54 @@ set background=dark
 "endif
 " colorscheme solarized
 
+" Colorscheme OneDark
+colorscheme onedark
+syntax on
+set number
+highlight Normal ctermbg=None
+highlight LineNr ctermfg=DarkGrey
+
+
 
 " code folding
 set foldmethod=indent   
 set foldnestmax=2
 set nofoldenable
-set foldlevel=2
+set foldlevel=99
 
 " Shortcuts
 "nmap <C-t> :tabnew<CR>
-noremap ;] :tabn<CR> 
-noremap ;[ :tabp<CR> 
+noremap ;] :bnext<CR> 
+noremap ;[ :bprevious<CR> 
 nmap <C-k> :gciw
 nmap <C-h> :nohl<CR>
 "autocmd vimenter * NERDTree
 map <C-a> :NERDTreeToggle<CR>
 noremap :W :w
 noremap tf :tabf 
-noremap vs :vsplit 
+noremap <Leader>vs :vsplit
 noremap ss :split 
 noremap tt :tags
 noremap mi :set mouse=i<CR>
 noremap ma :set mouse=a<CR>
-noremap cpans<CR> :FZF ~/ans<CR>
-noremap cpa2a<CR> :FZF ~/ans/a2a<CR>
-noremap cpm<CR> :FZF ~/ans/web/lib/a<CR>
-noremap cpf<CR> :FZF ~/ans/feed<CR>
-noremap f :FZF<CR>
 "navigation
-" nnoremap <tab><tab> <C-W><C-W>
+" To make navigation easier between splits
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-H> <C-W><C-H>
 nnoremap <C-L> <C-W><C-L>
-" search
-noremap ;s  :Ack!<Space>
+" search  (Needs silver surfer/ack installed)
+noremap s  :Ack!<Space>
+" file search (Needs FZF installed)
+nnoremap <Leader>q :Files<CR>  
+
+" buffers
+noremap <Leader>d :bdelete
+noremap <Leader>b :b<Space>
+noremap <Leader>B :Buffers<CR>
+
+" Enable folding with the spacebar
+nnoremap <space> za
 
 
 "nerd commenter
@@ -106,30 +133,37 @@ let g:NERDSpaceDelims = 1
 
 
 " jedi-vim
-let g:jedi#use_tabs_not_buffers = 1
+let g:jedi#use_tabs_not_buffers = 0
 let g:jedi#completions_enabled = 0
 let g:jedi#popup_on_dot = 0
-let g:jedi#use_splits_not_buffers = "right"
+" let g:jedi#use_splits_not_buffers = "right"
 
 
 " vim-airline
-let airline_theme='powerlineish'
+" let airline_theme='powerlineish'
 " let g:airline_solarized_bg='dark'
+" let g:airline#extensions#tabline#formatter = 'default'
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'default'
-" let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 1
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 
 
-"NCL
-au BufRead,BufNewFile *.ncl set filetype=ncl
-au! Syntax newlang source $VIM/ncl.vim 
+"Python
+au BufNewFile, BufRead *.py
+    \ set tabstop=4
+    \ set softtabstop=4
+    \ set shiftwidth=4
+    \ set textwidth=79
+    \ set expandtab
+    \ set autoindent
+    \ set fileformat=unix
+    \ set python_highlight_all=1
+au BufRead, BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
-
-"Jemdoc
-augroup filetypedetect
-    au! BufNewFile,BufRead *.jemdoc setf jemdoc
-augroup END
 
 
 "vim-gutter (git plugin)
@@ -138,7 +172,6 @@ set updatetime=100
 " fzf (fuzzy completion)
 set rtp+=~/.fzf
 let g:fzf_action = {
-  \ 'return': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit'} 
 
