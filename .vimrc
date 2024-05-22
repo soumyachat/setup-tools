@@ -120,9 +120,11 @@ noremap s  :Ack!<Space>
 nnoremap <Leader>q :Files<CR>  
 
 " buffers
-noremap <Leader>d :bdelete
-noremap <Leader>b :b<Space>
+" noremap <Leader>d :bdelete
+" noremap <Leader>b :b<Space>
 noremap <Leader>B :Buffers<CR>
+" delete all current buffers
+noremap <Leader>bd :1,$bd
 
 " Enable folding with the spacebar
 nnoremap <space> za
